@@ -1,12 +1,23 @@
 import { useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import login from "services/users"
 
 export default function Login() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
   const [processing, setProcessing] = useState(false)
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    login({ email, password })
+      .then((response) => {
+        //handle response to save user data!!!
+        router.replace("/")
+      })
+      .catch((error) => setError(error.message))
   }
 
   return (
@@ -29,7 +40,7 @@ export default function Login() {
             method="POST"
           >
             <input type="hidden" name="remember" value="true" />
-            <div className="rounded-md shadow-sm -space-y-px">
+            <div>
               <div>
                 <label
                   htmlFor="email-address"
@@ -42,7 +53,10 @@ export default function Login() {
                   name="email"
                   type="email"
                   required
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    setError("")
+                  }}
                   className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 />
               </div>
@@ -58,29 +72,33 @@ export default function Login() {
                   name="password"
                   type="password"
                   required
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    setError("")
+                  }}
                   className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 />
               </div>
+              {error && (
+                <span className="p-2 text-xs text-red-500">*{error}</span>
+              )}
             </div>
 
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                  Create new account
-                </a>
+                <Link href="/register">
+                  <a className="font-medium text-indigo-600 hover:text-indigo-500">
+                    Create new account
+                  </a>
+                </Link>
               </div>
 
               <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                  Forgot your password?
-                </a>
+                <Link href="/forgotpassword">
+                  <a className="font-medium text-indigo-600 hover:text-indigo-500">
+                    Forgot your password?
+                  </a>
+                </Link>
               </div>
             </div>
 
